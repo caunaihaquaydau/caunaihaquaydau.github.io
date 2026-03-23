@@ -15,24 +15,12 @@
             font-family: 'Segoe UI', 'Inter', 'Courier New', monospace;
             background: url('nen.jpg') center/cover no-repeat fixed;
             background-color: #0a111a;
-            background-blend-mode: normal;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
             position: relative;
-        }
-
-        @supports (background: linear-gradient(0deg, #0a111a, #1a2a3a)) {
-            body {
-                background: linear-gradient(135deg, #0b1622 0%, #0f212f 100%);
-                background-attachment: fixed;
-            }
-            body {
-                background: url('nen.jpg') center/cover no-repeat fixed, linear-gradient(135deg, #0b1622, #0f212f);
-                background-blend-mode: overlay;
-            }
         }
 
         body::before {
@@ -515,7 +503,6 @@
                 else if (finalValue === 1) message = '🤓👉Xui vậy ăn ăn c*t hả?';
                 else message = `🤓Lắc ra ${finalValue} `;
                 resultMsg.innerHTML = `🎲 Kết quả: ${finalValue} · ${message}`;
-                
                 dice.removeEventListener('animationend', onAnimationEnd);
                 rolling = false;
             };
@@ -527,5 +514,4 @@
         setDiceFace(1);
     })();
 </script>
-</body>
-</html>
+                
