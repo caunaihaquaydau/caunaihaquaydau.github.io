@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Caunaihaquaydau</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', 'Courier New', monospace;
+            background: url('nen.jpg') center/cover no-repeat fixed;
+            background-color: #0a111a;
+            background-blend-mode: normal;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        @supports (background: linear-gradient(0deg, #0a111a, #1a2a3a)) {
+            body {
+                background: linear-gradient(135deg, #0b1622 0%, #0f212f 100%);
+                background-attachment: fixed;
+            }
+            body {
+                background: url('nen.jpg') center/cover no-repeat fixed, linear-gradient(135deg, #0b1622, #0f212f);
+                background-blend-mode: overlay;
+            }
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.25);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #starCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .box {
+            position: relative;
+            z-index: 2;
+            background: rgba(8, 18, 28, 0.55);
+            backdrop-filter: blur(4px);
+            border-radius: 48px;
+            padding: 42px 52px;
+            max-width: 920px;
+            width: 100%;
+            text-align: left;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(120, 170, 220, 0.5) inset, 0 0 0 4px rgba(0, 0, 0, 0.2) inset;
+            border: 1px solid rgba(140, 200, 255, 0.6);
+            transition: all 0.2s;
+        }
+
+        .box p {
+            margin: 22px 0;
+            font-size: 1.55rem;
+            font-weight: 500;
+            line-height: 1.5;
+            border-bottom: 1px solid rgba(180, 210, 255, 0.25);
+            padding-bottom: 12px;
+            color: #ffffff;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+            letter-spacing: 0.2px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .box p:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .social-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            margin-right: 6px;
+            flex-shrink: 0;
+            transition: transform 0.2s ease, filter 0.2s;
+        }
+
+        .social-icon svg {
+            width: 26px;
+            height: 26px;
+            display: block;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+            transition: all 0.2s;
+        }
+
+        a:hover .social-icon svg,
+        .social-icon:hover svg {
+            transform: scale(1.08);
+            filter: drop-shadow(0 0 4px rgba(200, 220, 255, 0.8));
+        }
+
+        a {
+            color: #c6e2ff;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 4px;
+            transition: all 0.2s;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        a:hover {
+            color: #f0f5ff;
+            text-shadow: 0 0 6px rgba(100, 180, 255, 0.8);
+        }
+
+        .platform-label {
+            font-weight: 600;
+            color: #bdd4ff;
+            letter-spacing: 0.3px;
+            margin-right: 2px;
+        }
+
+        .box p strong, .box p em {
+            color: #ffe0b5;
+        }
+
+        .dice-section {
+            margin-top: 32px;
+            text-align: center;
+            border-top: 1px dashed rgba(140, 200, 255, 0.4);
+            padding-top: 28px;
+        }
+        .dice-title {
+            font-size: 1.2rem;
+            color: #ffdfb3;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .dice-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            perspective: 800px;
+        }
+        .dice {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.2s ease;
+        }
+        .dice.rolling {
+            animation: shakeDice 0.5s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+        }
+        @keyframes shakeDice {
+            0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+            20% { transform: rotateX(80deg) rotateY(40deg) rotateZ(20deg); }
+            40% { transform: rotateX(200deg) rotateY(120deg) rotateZ(60deg); }
+            60% { transform: rotateX(320deg) rotateY(200deg) rotateZ(100deg); }
+            80% { transform: rotateX(480deg) rotateY(280deg) rotateZ(140deg); }
+            100% { transform: rotateX(720deg) rotateY(360deg) rotateZ(180deg); }
+        }
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            background: #f8f9fc;
+            border: 2px solid #2c3e66;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #1e2f4b;
+            backface-visibility: visible;
+        }
+        .face-front  { transform: translateZ(50px); background: radial-gradient(circle at 30% 30%, #fff, #eef3ff); }
+        .face-back   { transform: rotateY(180deg) translateZ(50px); background: radial-gradient(circle at 30% 30%, #fff, #eef3ff); }
+        .face-right  { transform: rotateY(90deg) translateZ(50px); background: radial-gradient(circle at 30% 30%, #fff, #eef3ff); }
+        .face-left   { transform: rotateY(-90deg) translateZ(50px); background: radial-gradient(circle at 30% 30%, #fff, #eef3ff); }
+        .face-top    { transform: rotateX(90deg) translateZ(50px); background: radial-gradient(circle at 30% 30%, #fff, #eef3ff); }
+        .face-bottom { transform: rotateX(-90deg) translateZ(50px); background: radial-gradient(circle at 30% 30%, #fff, #eef3ff); }
+
+        .dot {
+            width: 18px;
+            height: 18px;
+            background: #1f2f4a;
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .face .dot-center {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .dot-pos1 { top: 25%; left: 25%; }
+        .dot-pos2 { bottom: 25%; right: 25%; }
+        .dot-pos3 { top: 25%; left: 25%; }
+        .dot-pos4 { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .dot-pos5 { bottom: 25%; right: 25%; }
+        .dot-pos6 { top: 25%; left: 25%; }
+        .dot-pos7 { top: 25%; right: 25%; }
+        .dot-pos8 { bottom: 25%; left: 25%; }
+        .dot-pos9 { bottom: 25%; right: 25%; }
+        .dot-pos10 { top: 25%; left: 25%; }
+        .dot-pos11 { top: 25%; right: 25%; }
+        .dot-pos12 { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .dot-pos13 { bottom: 25%; left: 25%; }
+        .dot-pos14 { bottom: 25%; right: 25%; }
+        .dot-pos15 { top: 25%; left: 25%; }
+        .dot-pos16 { top: 25%; right: 25%; }
+        .dot-pos17 { bottom: 25%; left: 25%; }
+        .dot-pos18 { bottom: 25%; right: 25%; }
+        .dot-pos19 { top: 25%; left: 50%; transform: translateX(-50%); }
+        .dot-pos20 { bottom: 25%; left: 50%; transform: translateX(-50%); }
+
+        .result-message {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            background: rgba(0,0,0,0.5);
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 40px;
+            color: #ffe0b0;
+            font-weight: 500;
+            backdrop-filter: blur(2px);
+        }
+        @media (max-width: 700px) {
+            .dice { width: 75px; height: 75px; }
+            .face { border-radius: 16px; }
+            .face-front  { transform: translateZ(37.5px); }
+            .face-back   { transform: rotateY(180deg) translateZ(37.5px); }
+            .face-right  { transform: rotateY(90deg) translateZ(37.5px); }
+            .face-left   { transform: rotateY(-90deg) translateZ(37.5px); }
+            .face-top    { transform: rotateX(90deg) translateZ(37.5px); }
+            .face-bottom { transform: rotateX(-90deg) translateZ(37.5px); }
+            .dot { width: 12px; height: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="starCanvas"></canvas>
+
+<div class="box">
+    <p style="justify-content: center; text-align: center;">
+        ✨ HI, I'm <strong style="color:#d6ecff; font-size:1.8rem;">Caunaihaquaydau</strong> ✨
+    </p>
+
+    <p>
+        <span class="social-icon">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 12C22 6.477 17.523 2 12 2S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879v-6.99h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.99C18.343 21.128 22 16.991 22 12z" fill="white"/>
+            </svg>
+        </span>
+        <span class="platform-label">Facebook:</span>
+        <a href="https://www.facebook.com/phuc.phan.lns" target="_blank" rel="noopener noreferrer">Phúc Phan</a>
+    </p>
+
+    <p>
+        <span class="social-icon">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20.317 4.37a19.794 19.794 0 0 0-4.885-1.515c-.212.377-.46.884-.628 1.285a18.28 18.28 0 0 0-5.487 0 13.196 13.196 0 0 0-.637-1.285 19.823 19.823 0 0 0-4.885 1.515c-2.577 3.839-3.285 7.585-2.94 11.279a20.038 20.038 0 0 0 6.014 3.008c.483-.662.914-1.366 1.285-2.112a12.823 12.823 0 0 1-2.023-.964c.17-.122.336-.25.496-.384a14.18 14.18 0 0 0 11.933 0c.162.134.328.262.496.384a12.7 12.7 0 0 1-2.023.964c.371.746.802 1.45 1.285 2.112a20.005 20.005 0 0 0 6.014-3.008c.406-4.145-.68-7.854-2.94-11.279zM8.02 14.33c-1.176 0-2.14-1.077-2.14-2.4 0-1.322.944-2.4 2.14-2.4 1.196 0 2.16 1.078 2.14 2.4 0 1.323-.944 2.4-2.14 2.4zm7.96 0c-1.176 0-2.14-1.077-2.14-2.4 0-1.322.944-2.4 2.14-2.4 1.196 0 2.16 1.078 2.14 2.4 0 1.323-.944 2.4-2.14 2.4z" fill="white"/>
+            </svg>
+        </span>
+        <span class="platform-label">Discord:</span>
+        <a href="https://discord.gg/rRpCntVQx" target="_blank" rel="noopener noreferrer">Join Server or dms @caunaihaquaydau</a>
+    </p>
+
+    <p>
+        <span class="social-icon">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.6-1.38-.97-2.23-1.56-.99-.69-.35-1.07.22-1.69.15-.15 2.71-2.48 2.76-2.69.006-.03.012-.14-.06-.2-.07-.05-.17-.03-.25-.02-.11.01-1.83 1.16-5.17 3.42-.49.34-.93.5-1.33.49-.44-.01-1.28-.25-1.91-.45-.77-.25-1.38-.38-1.33-.81.03-.22.33-.45.91-.68 3.58-1.56 5.97-2.59 7.17-3.08 3.41-1.41 4.12-1.65 4.58-1.66.1 0 .33.02.48.15.12.11.15.26.17.38.01.05.02.11.01.18z" fill="white"/>
+            </svg>
+        </span>
+        <span class="platform-label">Telegram:</span>
+        <a href="https://t.me/caunaihaquaydau" target="_blank" rel="noopener noreferrer">@caunaihaquaydau</a>
+    </p>
+
+    <p>
+        <span class="platform-label">Zalo:</span>
+        <a href="https://zalo.me/0388991869" target="_blank" rel="noopener noreferrer">0388991869</a>
+    </p>
+
+    <p style="border-bottom: 1px solid rgba(180, 210, 255, 0.25);">
+         Mua tool tào lao inbox nhé 👉 <span style="color:#ffcf9a;">(ưu tiên Discord)</span>
+    </p>
+
+    <p style="border-bottom: none; gap: 10px; flex-wrap: wrap;">
+        🤓 Tài năng: <em style="background: rgba(0,0,0,0.3); padding: 4px 12px; border-radius: 40px;">Xạo lồn không chớp mắt</em>
+        <span style="margin-left: 6px;">💤 Chill và ngủ,</span>
+        <span style="color:#ffc8a2;">Bọn chó yêu nhau hận chúng mày</span>
+    </p>
+
+    <div class="dice-section">
+        <div class="dice-title">
+            🎲 LẮC XÚC XẮC MAY MẮN 🎲
+        </div>
+        <div class="dice-container" id="diceContainer">
+            <div class="dice" id="dice">
+                <div class="face face-front" data-value="1">
+                    <div class="dot dot-center"></div>
+                </div>
+                <div class="face face-back" data-value="6">
+                    <div class="dot dot-pos15"></div>
+                    <div class="dot dot-pos16"></div>
+                    <div class="dot dot-pos17"></div>
+                    <div class="dot dot-pos18"></div>
+                    <div class="dot dot-pos19"></div>
+                    <div class="dot dot-pos20"></div>
+                </div>
+                <div class="face face-right" data-value="2">
+                    <div class="dot dot-pos1"></div>
+                    <div class="dot dot-pos2"></div>
+                </div>
+                <div class="face face-left" data-value="5">
+                    <div class="dot dot-pos10"></div>
+                    <div class="dot dot-pos11"></div>
+                    <div class="dot dot-pos12"></div>
+                    <div class="dot dot-pos13"></div>
+                    <div class="dot dot-pos14"></div>
+                </div>
+                <div class="face face-top" data-value="3">
+                    <div class="dot dot-pos3"></div>
+                    <div class="dot dot-pos4"></div>
+                    <div class="dot dot-pos5"></div>
+                </div>
+                <div class="face face-bottom" data-value="4">
+                    <div class="dot dot-pos6"></div>
+                    <div class="dot dot-pos7"></div>
+                    <div class="dot dot-pos8"></div>
+                    <div class="dot dot-pos9"></div>
+                </div>
+            </div>
+        </div>
+        <div class="result-message" id="resultMsg">👉 Click vào xúc xắc👈</div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        var canvas = document.getElementById('starCanvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+
+        var stars = [];
+        var STAR_COUNT = 130;
+        var CONNECT_DIST = 135;
+        var width, height;
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        function random(min, max) {
+            return min + Math.random() * (max - min);
+        }
+
+        function initStars() {
+            stars = [];
+            for (var i = 0; i < STAR_COUNT; i++) {
+                stars.push({
+                    x: random(0, width),
+                    y: random(0, height),
+                    radius: random(2, 4.8),
+                    speedX: random(-14, 14),
+                    speedY: random(-14, 14),
+                    phase: random(0, Math.PI * 2),
+                    alphaBase: random(0.5, 1.0)
+                });
+            }
+        }
+
+        var lastTime = 0;
+        function animate(nowMs) {
+            requestAnimationFrame(animate);
+            if (!lastTime) {
+                lastTime = nowMs;
+                return;
+            }
+            var delta = Math.min(0.033, (nowMs - lastTime) / 1000);
+            if (delta <= 0) {
+                lastTime = nowMs;
+                return;
+            }
+
+            for (var i = 0; i < stars.length; i++) {
+                var s = stars[i];
+                s.x += s.speedX * delta;
+                s.y += s.speedY * delta;
+
+                if (s.x > width + 60) s.x = -60;
+                if (s.x < -60) s.x = width + 60;
+                if (s.y > height + 60) s.y = -60;
+                if (s.y < -60) s.y = height + 60;
+            }
+
+            ctx.clearRect(0, 0, width, height);
+
+            for (var i = 0; i < stars.length; i++) {
+                for (var j = i + 1; j < stars.length; j++) {
+                    var dx = stars[i].x - stars[j].x;
+                    var dy = stars[i].y - stars[j].y;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < CONNECT_DIST) {
+                        var opacity = (1 - dist / CONNECT_DIST) * 0.52;
+                        ctx.beginPath();
+                        ctx.moveTo(stars[i].x, stars[i].y);
+                        ctx.lineTo(stars[j].x, stars[j].y);
+                        ctx.strokeStyle = 'rgba(110, 170, 245, ' + opacity + ')';
+                        ctx.lineWidth = 1.2;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            for (var i = 0; i < stars.length; i++) {
+                var s = stars[i];
+                var twinkle = 0.55 + 0.45 * Math.sin(nowMs * 0.004 + s.phase);
+                var rad = s.radius * (0.7 + 0.5 * twinkle);
+                var glowAlpha = 0.5 + 0.4 * twinkle;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, rad * 1.1, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(100, 170, 250, ' + (glowAlpha * 0.5) + ')';
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, rad, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(160, 210, 255, ' + (0.7 + 0.3 * twinkle) + ')';
+                ctx.fill();
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = 'rgba(160, 210, 255, 0.6)';
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+            lastTime = nowMs;
+        }
+
+        window.addEventListener('load', function() {
+            resize();
+            initStars();
+            animate(0);
+        });
+        window.addEventListener('resize', function() {
+            resize();
+            initStars();
+        });
+    })();
+
+    (function() {
+        const dice = document.getElementById('dice');
+        const resultMsg = document.getElementById('resultMsg');
+        let rolling = false;
+
+        function getRandomValue() {
+            return Math.floor(Math.random() * 6) + 1;
+        }
+
+        function setDiceFace(value) {
+            let rotateX = 0, rotateY = 0;
+            switch(value) {
+                case 1: rotateX = 0; rotateY = 0; break;
+                case 2: rotateX = 0; rotateY = -90; break;
+                case 3: rotateX = -90; rotateY = 0; break;
+                case 4: rotateX = 90; rotateY = 0; break;
+                case 5: rotateX = 0; rotateY = 90; break;
+                case 6: rotateX = 0; rotateY = 180; break;
+            }
+            dice.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        }
+
+        function roll() {
+            if (rolling) return;
+            rolling = true;
+
+            const finalValue = getRandomValue();
+            dice.classList.add('rolling');
+
+            const onAnimationEnd = () => {
+                dice.classList.remove('rolling');
+                setDiceFace(finalValue);
+                
+                let message = '';
+                if (finalValue === 6) message = '🤓Hên như chó';
+                else if (finalValue === 1) message = '🤓👉Xui vậy ăn ăn c*t hả?';
+                else message = `🤓Lắc ra ${finalValue} `;
+                resultMsg.innerHTML = `🎲 Kết quả: ${finalValue} · ${message}`;
+                
+                dice.removeEventListener('animationend', onAnimationEnd);
+                rolling = false;
+            };
+            
+            dice.addEventListener('animationend', onAnimationEnd);
+        }
+
+        dice.addEventListener('click', roll);
+        setDiceFace(1);
+    })();
+</script>
+</body>
+</html>
